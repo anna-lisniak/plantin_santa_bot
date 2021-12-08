@@ -5,7 +5,13 @@ const { admin, telegramToken } = require('./credentials');
 
 const PASSWORD = 'plantin loves you';
 
+const API_TOKEN = telegramToken;
+const PORT = process.env.PORT || 3000;
+const URL = process.env.URL || 'https://floating-fortress-35705.herokuapp.com';
+
 const bot = new Telegraf(telegramToken);
+bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
+bot.startWebhook(`/bot${API_TOKEN}`, null, PORT);
 bot.context.db = {
   members: []
 };
