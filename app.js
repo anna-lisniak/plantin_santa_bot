@@ -284,9 +284,8 @@ bot.command('go', ctx => {
   for (let i = 0; i < santas.length; i++) {
     const from = santas[i];
     const to = santas[i + 1] || santas[0];
-    console.log({ to });
 
-    const wishlist = to.wishlist ? 'Вот тебе подсказка для ' + to.firstName + ':\n' + to.wishlist.join(',\n') : '';
+    const wishlist = to.wishlist.length ? 'Вот тебе подсказка для ' + to.firstName + ':\n' + to.wishlist.join(',\n') : '';
 
     bot.telegram.sendSticker(from.id, stickers.present);
     bot.telegram.sendMessage(
