@@ -268,6 +268,7 @@ bot.command('go', ctx => {
   }
 
   const { members } = ctx.db;
+  console.log({members});
 
   if (members.length < 2) {
     bot.telegram.sendMessage(
