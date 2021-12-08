@@ -23,6 +23,7 @@ const stickers = {
 };
 
 bot.command('start', (ctx) => {
+  console.log('start');
   bot.telegram.sendSticker(
       ctx.chat.id,
       stickers.hohoho
