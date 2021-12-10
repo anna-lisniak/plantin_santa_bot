@@ -52,6 +52,7 @@ bot.command('start', async (ctx) => {
     );
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -61,6 +62,7 @@ wishlistScene.enter(async (ctx) => {
     await ctx.reply('Отправь мне свой wishlist');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -94,6 +96,8 @@ wishlistScene.on('text', async (ctx) => {
     await ctx.reply(message, inline_keyboard);
   } catch (e) {
     await ctx.reply('error :(');
+
+    console.error(e)
   }
 });
 
@@ -108,6 +112,7 @@ wishlistScene.leave(async (ctx) => {
     await ctx.reply('Твой wishlist создан. Ты можешь дополнить или удалить его.', inline_keyboard);
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -127,6 +132,7 @@ bot.action('waitForGame', async (ctx) => {
     );
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -155,6 +161,7 @@ passwordScene.enter(async (ctx) => {
     await ctx.replyWithPhoto({ source: './you.jpeg' });
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 
 });
@@ -180,6 +187,7 @@ passwordScene.on('text', async (ctx) => {
     await ctx.reply('Хочешь создать свой wishlist?', inline_keyboard);
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -188,6 +196,7 @@ bot.action('withoutWishlist', async (ctx) => {
     ctx.reply('Готово!');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -202,6 +211,7 @@ bot.action('finishWishlist', async (ctx) => {
     await ctx.scene.leave('wishlistScene');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 // bot.action('finishWishlist', ctx => ctx.reply('ok'))
@@ -212,6 +222,7 @@ bot.action('addWishlist', async (ctx) => {
     await ctx.scene.enter('wishlistScene');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -220,6 +231,7 @@ bot.action('join', async (ctx) => {
     await ctx.scene.enter('passwordScene');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -228,6 +240,7 @@ bot.command('join', async (ctx) => {
     await ctx.scene.enter('passwordScene');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -254,6 +267,7 @@ bot.command('members', async (ctx) => {
 
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -330,6 +344,83 @@ bot.command('go', async (ctx) => {
 
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
+  }
+});
+
+bot.command('test', async (ctx) => {
+  try {
+    const { from: { id } } = ctx;
+
+    const isAdmin = isMemberAdmin(id);
+
+    if (!isAdmin) {
+      bot.telegram.sendMessage(
+          id,
+          `Попроси [Генерального Санту](tg://user?id=${admin.id}) начать!`,
+          { parse_mode: 'Markdown' }
+      );
+      return;
+    }
+
+    const { members } = ctx.db;
+    console.log(JSON.stringify({ members }, null, 2));
+
+    // if (members.length < 2) {
+    //   await bot.telegram.sendMessage(
+    //       id,
+    //       `Не хватает Сант`,
+    //       { parse_mode: 'Markdown' }
+    //   );
+    //   return;
+    // }
+
+    const santas = shuffle(members);
+
+    for (let i = 0; i < santas.length; i++) {
+      const from = santas[i];
+      const to = santas[i + 1] || santas[0];
+      try {
+        // await bot.telegram.sendSticker(from.id, stickers.present);
+      } catch (e) {
+        console.log('e');
+      }
+      try {
+        // await bot.telegram.sendMessage(
+        //     from.id,
+        //     `Ты Секретный Санта для [${to.firstName}](tg://user?id=${to.id})`,
+        //     { parse_mode: 'Markdown' }
+        );
+      } catch (e) {
+        console.log(e);
+        await bot.telegram.sendMessage(
+            from.id,
+            'Something went wrong, ask Anna for help'
+        );
+      }
+
+      try {
+        const wishlist = to.wishlist.length ? 'Вот тебе подсказка для ' + to.firstName + ':\n' + to.wishlist.join(',\n') : '';
+        console.log({wishlist});
+        // if (wishlist) {
+        //   await bot.telegram.sendMessage(
+        //       from.id,
+        //       wishlist,
+        //       { parse_mode: 'Markdown' }
+        //   );
+        // }
+      } catch (e) {
+        console.log(e);
+        await bot.telegram.sendMessage(
+            from.id,
+            'Processing wishlist failed, ask Anna for help'
+        );
+      }
+    }
+
+  } catch (e) {
+    await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -362,6 +453,7 @@ bot.command('clear', async (ctx) => {
     );
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -379,6 +471,7 @@ bot.action('removeMember', async (ctx) => {
     await bot.telegram.sendMessage(id, 'Ты больше не Санта...');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -388,6 +481,7 @@ bot.action('removeMemberList', async (ctx) => {
     await bot.telegram.sendMessage(ctx.update.callback_query.from.id, 'Killed!');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -396,6 +490,7 @@ bot.command('set_wishlist', async (ctx) => {
     await ctx.scene.enter('wishlistScene');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -411,6 +506,7 @@ bot.command('clear_wishlist', async (ctx) => {
     await ctx.reply('cleared');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -426,6 +522,7 @@ bot.command('get_wishlist', async (ctx) => {
     await ctx.reply(message);
   } catch (e) {
     await ctx.reply('error :(', e);
+    console.error(e)
   }
 
 });
@@ -443,6 +540,7 @@ bot.action('clear_wishlist', async (ctx) => {
     ctx.reply('Успешно удален!');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
@@ -451,6 +549,7 @@ bot.action('set_wishlist', async (ctx) => {
     await ctx.scene.enter('wishlistScene');
   } catch (e) {
     await ctx.reply('error :(');
+    console.error(e)
   }
 });
 
