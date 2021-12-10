@@ -274,6 +274,7 @@ bot.command('go', async (ctx) => {
 
     const { members } = ctx.db;
     console.log(JSON.stringify({ members }, null, 2));
+    // process.st
 
     if (members.length < 2) {
       await bot.telegram.sendMessage(
@@ -289,15 +290,42 @@ bot.command('go', async (ctx) => {
     for (let i = 0; i < santas.length; i++) {
       const from = santas[i];
       const to = santas[i + 1] || santas[0];
+      try {
+        await bot.telegram.sendSticker(from.id, stickers.present);
+      } catch (e) {
+        console.log('e');
+      }
+      try {
+        await bot.telegram.sendMessage(
+            from.id,
+            `Ты Секретный Санта для [${to.firstName}](tg://user?id=${to.id})`,
+            { parse_mode: 'Markdown' }
+        );
+      } catch (e) {
+        console.log(e);
+        await bot.telegram.sendMessage(
+            from.id,
+            'Something went wrong, ask Anna for help'
+        );
+      }
 
-      const wishlist = to.wishlist.length ? 'Вот тебе подсказка для ' + to.firstName + ':\n' + to.wishlist.join(',\n') : '';
+      try {
+        const wishlist = to.wishlist.length ? 'Вот тебе подсказка для ' + to.firstName + ':\n' + to.wishlist.join(',\n') : '';
 
-      await bot.telegram.sendSticker(from.id, stickers.present);
-      await bot.telegram.sendMessage(
-          from.id,
-          `Ты Секретный Санта для [${to.firstName}](tg://user?id=${to.id})\n\n${wishlist}`,
-          { parse_mode: 'Markdown' }
-      );
+        if (wishlist) {
+          await bot.telegram.sendMessage(
+              from.id,
+              wishlist,
+              { parse_mode: 'Markdown' }
+          );
+        }
+      } catch (e) {
+        console.log(e);
+        await bot.telegram.sendMessage(
+            from.id,
+            'Processing wishlist failed, ask Anna for help'
+        );
+      }
     }
 
   } catch (e) {
@@ -397,8 +425,9 @@ bot.command('get_wishlist', async (ctx) => {
 
     await ctx.reply(message);
   } catch (e) {
-    await ctx.reply('error :(');
+    await ctx.reply('error :(', e);
   }
+
 });
 
 bot.action('clear_wishlist', async (ctx) => {
