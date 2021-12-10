@@ -390,7 +390,7 @@ bot.command('test', async (ctx) => {
         //     from.id,
         //     `Ты Секретный Санта для [${to.firstName}](tg://user?id=${to.id})`,
         //     { parse_mode: 'Markdown' }
-        );
+        // );
       } catch (e) {
         console.log(e);
         await bot.telegram.sendMessage(
@@ -401,7 +401,7 @@ bot.command('test', async (ctx) => {
 
       try {
         const wishlist = to.wishlist.length ? 'Вот тебе подсказка для ' + to.firstName + ':\n' + to.wishlist.join(',\n') : '';
-        console.log({wishlist});
+        console.log({wishlist: JSON.stringify(wishlist, null, 2)});
         // if (wishlist) {
         //   await bot.telegram.sendMessage(
         //       from.id,
